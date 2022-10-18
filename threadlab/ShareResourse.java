@@ -8,9 +8,6 @@ public class ShareResourse {
         }
         else {
             wait();
-            this.foodNum += s;
-            System.out.println(Thread.currentThread().getName() + "生产了" + s + "个食物," + "当前食物总数为：" + getFoodNum());
-            notify();
         }
     }
     public synchronized void get(int s) throws InterruptedException {
@@ -21,9 +18,6 @@ public class ShareResourse {
         }
         else {
             wait();
-            this.foodNum -= s;
-            System.out.println(Thread.currentThread().getName() + "消费了" + s + "个食物," + "当前食物总数为：" + getFoodNum());
-            notify();
         }
     }
     public boolean canPut(int s) {
