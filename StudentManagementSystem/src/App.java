@@ -1,8 +1,8 @@
 import java.io.*;
-import java.util.HashMap;
 
 public class App {
     public static void main(String[] args) throws IOException {
+        AppGui appGui = new AppGui();
         FileReader fileReader = new FileReader("lib/Student.txt");
         System.out.println(fileReader.toString());
         BufferedReader bufferedReader = new BufferedReader(fileReader);
