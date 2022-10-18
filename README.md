@@ -1,9 +1,9 @@
 # Simple Student Management System(without database)
 
 ## Demand
-```
-设计带GUI界面的软件，能够现实对学生信息（id、姓名、性别、课程成绩等信息，可自行设定）增删查改，学生信息需要通过流操作存放到文件中，第二次打开软件时，能够从文件中将学生信息从文件中读出。
-```
+
+- 设计带GUI界面的软件，能够现实对学生信息（id、姓名、性别、课程成绩等信息，可自行设定）增删查改，学生信息需要通过流操作存放到文件中，第二次打开软件时，能够从文件中将学生信息从文件中读出。
+
 1. Accomplish additions，deletions，changes and  selections to student information.
 2. Store data to file.
 
