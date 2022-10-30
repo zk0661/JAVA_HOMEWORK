@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Vector;
 
 public class ClassSet {
@@ -30,6 +31,17 @@ public class ClassSet {
                 String temp2 = ss + "#".repeat(Math.max(0, temp - 1));
                 StudentTable.get(o).setSname(temp2);
             }
+        }
+    }
+
+    private void InvBuild() {
+        // 遍历每一个姓名，使姓名背后的'#'去掉
+        for (String o : StudentTable.keySet()) {
+            String ss = StudentTable.get(o).getSname();
+            while (ss.charAt(ss.length() - 1) == '#') {
+                ss = ss.substring(0, ss.length() - 1);
+            }
+            StudentTable.get(o).setSname(ss);
         }
     }
 
@@ -76,6 +88,7 @@ public class ClassSet {
 
     // 将学生信息写回文件
     private void ExportStudentInformation() throws IOException {
+        InvBuild();
         FileWriter fileWriter = new FileWriter("lib/Student.txt");
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         // 将学生信息表中的信息写回文件
@@ -84,38 +97,40 @@ public class ClassSet {
         fileWriter.close();
     }
 
-    public void UpdateNameTable(Student o) {
+    private void ReName(Student o) {
         while (NameTable.get(o.getSname()) != null) {
-            o.setSname(o.getSname() + "#");
+            o.setSname(o.getSname() + '#');
         }
-        NameTable.put(o.getSname(), o.getSnumber());
     }
-
     // 增加一个学生
     public boolean Additions(Student o) {
         if (StudentTable.get(o.getSnumber()) != null) {
             return false;
         }
-        StudentTable.put(o.getSnumber(), o);
+        ReName(o);
         // 更新姓名-学号索引表
-        UpdateNameTable(o);
+        StudentTable.put(o.getSnumber(), o);
+        // 重构索引表
+        NameTable.put(o.getSname(), o.getSnumber());
         return true;
     }
 
     // 修改学生信息
-    public boolean Modify(Student o) {
+    public boolean Modify(Student origin, Student modify) {
         // 不允许修改学号
-        if (StudentTable.get(o.getSnumber()) == null) {
+        if (StudentTable.get(origin.getSnumber()) == null || !Objects.equals(origin.getSnumber(), modify.getSnumber())) {
             return false;
         }
-        StudentTable.put(o.getSnumber(), o);
-        UpdateNameTable(o);
+        Delete(origin);
+        // Delete之后一定为原学号对应值一定为null
+        Additions(modify);
         return true;
     }
 
     // 删除学生
     public void Delete(Student o) {
-        StudentTable.remove(o.getSnumber());
+        StudentTable.put(o.getSnumber(), null);
+        NameTable.put(o.getSname(), null);
     }
 
     public int getStudentSum() {

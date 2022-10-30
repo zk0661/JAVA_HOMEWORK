@@ -1,20 +1,11 @@
 import javax.swing.*;
 
 public class AppGui {
-
-    private JLabel jLabel;
-    private JFrame jFrame;
-    private JButton jButton;
-    private JPanel jPanel;
-
-    // 实现与ClassSet与界面的连接，应提供接口
-    public AppGui() { // 
-        JFrame jFrame = new JFrame();
-//        JLabel jLabel = new JLabel();
-
-        jFrame.setSize(620, 400);
+    AppGui() {
+        JFrame jFrame = new JFrame("学生信息管理系统");
+        jFrame.setBounds(300,100,650,500);
+        jFrame.setResizable(false);
         jFrame.setVisible(true);
+        jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
-    
-
 }
