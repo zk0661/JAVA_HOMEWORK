@@ -87,7 +87,7 @@ public class ClassSet {
     }
 
     // 将学生信息写回文件
-    private void ExportStudentInformation() throws IOException {
+    public void ExportStudentInformation() throws IOException {
         InvBuild();
         FileWriter fileWriter = new FileWriter("lib/Student.txt");
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

@@ -28,6 +28,7 @@ public class AppGui {
     private JMenu jMenu4;
     private JMenu jMenu5;
     private JMenu jMenu6;
+    private JMenu jMenu7;
     private ClassSet classSet;
 
     public AppGui() throws IOException {
@@ -49,6 +50,7 @@ public class AppGui {
         jMenuBar.add(jMenu3);
         jMenuBar.add(jMenu4);
         jMenuBar.add(jMenu5);
+        jMenuBar.add(jMenu7);
         jMenuBar.add(jMenu6);
         jFrame.add(jMenuBar, BorderLayout.NORTH);
         jFrame.add(jScrollPane, BorderLayout.CENTER);
@@ -66,6 +68,7 @@ public class AppGui {
         jMenu4 = new JMenu("查询");
         jMenu5 = new JMenu("刷新");
         jMenu6 = new JMenu("退出");
+        jMenu7 = new JMenu("保存修改");
         jMenu6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -75,7 +78,7 @@ public class AppGui {
         jMenu1.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                AddDialog addDialog = new AddDialog("请输入需要增加的学生信息");
+                AddDialog addDialog = new AddDialog("请输入需要增加的学生信息", AddDialog.ADD);
             }
         });
         jMenu5.addMouseListener(new MouseAdapter() {
@@ -90,20 +93,41 @@ public class AppGui {
 
             }
         });
+        jMenu7.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                try {
+                    classSet.ExportStudentInformation();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
     }
 
     class AddDialog {
-        AddDialog(String title) {
-            JDialog jDialog = new JDialog(jFrame, title);
+        private static final int ADD = 1;
+        private static final int MOD = 2;
+        int type;
+        private JDialog jDialog;
+        private JTextField jTextField1;
+        private JTextField jTextField2;
+        private JTextField jTextField3;
+
+        private JTextField jTextField4;
+        private JTextField jTextField5;
+        AddDialog(String title, int type) {
+            this.type = type;
+            jDialog = new JDialog(jFrame, title);
             jDialog.setVisible(true);
             jDialog.setBounds(500, 200, 250, 300);
             jDialog.setLayout(new GridLayout(6,2));
 
-            JTextField jTextField1 = new JTextField();
-            JTextField jTextField2 = new JTextField();
-            JTextField jTextField3 = new JTextField();
-            JTextField jTextField4 = new JTextField();
-            JTextField jTextField5 = new JTextField();
+            jTextField1 = new JTextField();
+            jTextField2 = new JTextField();
+            jTextField3 = new JTextField();
+            jTextField4 = new JTextField();
+            jTextField5 = new JTextField();
 
             JPanel jPanel2 = new JPanel();
             jTextField1.setPreferredSize(new Dimension(100,25));
@@ -134,22 +158,7 @@ public class AppGui {
             jDialog.add(jPanel6);
 
             JButton jButton = new JButton("确认");
-            jButton.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    Student student = new Student();
-                    student.setSnumber(jTextField1.getText());
-                    student.setSname(jTextField2.getText());
-                    student.setSex(jTextField3.getText().charAt(0));
-                    student.setAge(Integer.parseInt(jTextField4.getText()));
-                    student.setScore(Double.parseDouble(jTextField5.getText()));
-                    boolean tag = classSet.Additions(student);
-                    if (!tag) JOptionPane.showMessageDialog(jDialog, "学号不允许重复！");
-                    else JOptionPane.showMessageDialog(jDialog, "操作成功！");
-                    jDialog.dispose();
-                }
-
-            });
+            if (type == ADD) jButton.addMouseListener(new MyAdapter());
 
 
             JPanel jPanel = new JPanel();
@@ -170,8 +179,23 @@ public class AppGui {
             jDialog.add(jPanel1);
             jDialog.pack();
         }
-
+        class MyAdapter extends MouseAdapter {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Student student = new Student();
+                student.setSnumber(jTextField1.getText());
+                student.setSname(jTextField2.getText());
+                student.setSex(jTextField3.getText().charAt(0));
+                student.setAge(Integer.parseInt(jTextField4.getText()));
+                student.setScore(Double.parseDouble(jTextField5.getText()));
+                boolean tag = classSet.Additions(student);
+                if (!tag) JOptionPane.showMessageDialog(jDialog, "学号不允许重复！");
+                else JOptionPane.showMessageDialog(jDialog, "操作成功！");
+                jDialog.dispose();
+            }
+        }
     }
+
     private void setjTable() {
         Vector<Vector<Object>> studentList = classSet.getAll();
         AbstractTableModel tokenmodel =new AbstractTableModel() {
