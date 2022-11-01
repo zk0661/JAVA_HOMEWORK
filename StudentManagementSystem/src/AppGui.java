@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Vector;
 
+import static javax.swing.JButton.*;
+
 public class AppGui {
     private JFrame jFrame;
 
@@ -31,6 +33,12 @@ public class AppGui {
     public AppGui() throws IOException {
         classSet = new ClassSet();
         jFrame = new JFrame("学生信息管理系统");
+        jTable = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         setMenu();
         setjTable();
         JScrollPane jScrollPane = new JScrollPane(jTable);
@@ -66,30 +74,101 @@ public class AppGui {
         });
         jMenu1.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                AddDialog addDialog = new AddDialog();
+            public void mousePressed(MouseEvent e) {
+                AddDialog addDialog = new AddDialog("请输入需要增加的学生信息");
+            }
+        });
+        jMenu5.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                setjTable();
+            }
+        });
+        jMenu2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
             }
         });
     }
 
     class AddDialog {
-        AddDialog() {
-            JDialog jDialog = new JDialog(jFrame, "请输入需要增加的学生的信息");
+        AddDialog(String title) {
+            JDialog jDialog = new JDialog(jFrame, title);
             jDialog.setVisible(true);
             jDialog.setBounds(500, 200, 250, 300);
             jDialog.setLayout(new GridLayout(6,2));
-            jDialog.add(new JLabel("学号"));
-            jDialog.add(new TextArea());
-            jDialog.add(new JLabel("姓名"));
-            jDialog.add(new TextArea());
-            jDialog.add(new JLabel("性别"));
-            jDialog.add(new TextArea());
-            jDialog.add(new JLabel("年龄"));
-            jDialog.add(new TextArea());
-            jDialog.add(new JLabel("得分"));
-            jDialog.add(new TextArea());
-            jDialog.add(new JButton("确定"));
-            jDialog.add(new JButton("取消"));
+
+            JTextField jTextField1 = new JTextField();
+            JTextField jTextField2 = new JTextField();
+            JTextField jTextField3 = new JTextField();
+            JTextField jTextField4 = new JTextField();
+            JTextField jTextField5 = new JTextField();
+
+            JPanel jPanel2 = new JPanel();
+            jTextField1.setPreferredSize(new Dimension(100,25));
+            jPanel2.add(jTextField1, BorderLayout.CENTER);
+            JPanel jPanel3 = new JPanel();
+            jTextField2.setPreferredSize(new Dimension(100,25));
+            jPanel3.add(jTextField2);
+            JPanel jPanel4 = new JPanel();
+            jTextField3.setPreferredSize(new Dimension(100,25));
+            jPanel4.add(jTextField3);
+            JPanel jPanel5 = new JPanel();
+            jTextField4.setPreferredSize(new Dimension(100,25));
+            jPanel5.add(jTextField4);
+            JPanel jPanel6 = new JPanel();
+            jTextField5.setPreferredSize(new Dimension(100,25));
+            jPanel6.add(jTextField5);
+
+
+            jDialog.add(new JLabel("学号", JLabel.CENTER));
+            jDialog.add(jPanel2);
+            jDialog.add(new JLabel("姓名", JLabel.CENTER));
+            jDialog.add(jPanel3);
+            jDialog.add(new JLabel("性别", JLabel.CENTER));
+            jDialog.add(jPanel4);
+            jDialog.add(new JLabel("年龄", JLabel.CENTER));
+            jDialog.add(jPanel5);
+            jDialog.add(new JLabel("得分", JLabel.CENTER));
+            jDialog.add(jPanel6);
+
+            JButton jButton = new JButton("确认");
+            jButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    Student student = new Student();
+                    student.setSnumber(jTextField1.getText());
+                    student.setSname(jTextField2.getText());
+                    student.setSex(jTextField3.getText().charAt(0));
+                    student.setAge(Integer.parseInt(jTextField4.getText()));
+                    student.setScore(Double.parseDouble(jTextField5.getText()));
+                    boolean tag = classSet.Additions(student);
+                    if (!tag) JOptionPane.showMessageDialog(jDialog, "学号不允许重复！");
+                    else JOptionPane.showMessageDialog(jDialog, "操作成功！");
+                    jDialog.dispose();
+                }
+
+            });
+
+
+            JPanel jPanel = new JPanel();
+            jPanel.add(jButton);
+            jDialog.add(jPanel);
+
+
+
+            JButton jButton1 = new JButton("取消");
+            jButton1.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    jDialog.dispose();
+                }
+            });
+            JPanel jPanel1 = new JPanel();
+            jPanel1.add(jButton1);
+            jDialog.add(jPanel1);
+            jDialog.pack();
         }
 
     }
@@ -122,12 +201,8 @@ public class AppGui {
             }
         };
 
-        jTable = new JTable(tokenmodel) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+
+        jTable.setModel(tokenmodel);
         jTable.getTableHeader().setReorderingAllowed(false);
     }
 }
