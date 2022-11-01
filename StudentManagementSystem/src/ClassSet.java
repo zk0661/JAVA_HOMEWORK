@@ -147,18 +147,18 @@ public class ClassSet {
         return StudentTable.get(NameTable.get(name));
     }
 
-    public Vector<String> getAll() {
-        Vector<String> res = new Vector<String>();
+    public Vector<Vector<Object>> getAll() {
+        Vector<Vector<Object>> res = new Vector<>();
         for (String o : StudentTable.keySet()) {
             Student temp = StudentTable.get(o);
-            String temp2 = temp.getSnumber() + ' ' +
-                           temp.getSex() + ' ' +
-                           temp.getSname() + ' ' +
-                           temp.getAge() + ' ' +
-                           temp.getScore();
+            Vector<Object> temp2 = new Vector<>();
+            temp2.add(temp.getSnumber());
+            temp2.add(temp.getSname1());
+            temp2.add(temp.getSex());
+            temp2.add(temp.getAge());
+            temp2.add(temp.getScore());
             res.add(temp2);
         }
         return res;
     }
-
 }

@@ -52,6 +52,14 @@ public class Student {
         return Sname;
     }
 
+    public String getSname1() {
+        String s = Sname;
+        while (s.charAt(s.length() - 1) == '#') {
+            s = s.substring(0, s.length() - 1);
+        }
+        return s;
+    }
+
     public void setSname(String sname) {
         Sname = sname;
     }
