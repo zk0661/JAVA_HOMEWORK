@@ -117,6 +117,7 @@ public class AppGui {
             @Override
             public void mousePressed(MouseEvent e) {
                 String str = JOptionPane.showInputDialog(jFrame, "请输入需要修改的学生学号");
+                if (str == null) return;
                 classSet.SelectNumber(str);
                 Vector<Vector<Object>> selectResult = classSet.getSelectResult();
                 if (selectResult.size() == 0) {
