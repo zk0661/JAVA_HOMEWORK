@@ -23,13 +23,11 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
-                "Snumber='" + Snumber + '\'' +
-                ", Sex=" + Sex +
-                ", Sname='" + Sname + '\'' +
-                ", Age=" + Age +
-                ", Score=" + Score +
-                '}';
+        return getSnumber() + ' '
+                + getSex() + ' '
+                + getSname() + ' '
+                + getAge() + ' '
+                + getScore();
     }
 
     public String getSnumber() {

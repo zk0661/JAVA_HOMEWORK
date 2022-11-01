@@ -1,25 +1,17 @@
 import javax.swing.*;
-import javax.swing.event.MenuDragMouseEvent;
-import javax.swing.event.MenuDragMouseListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Vector;
 
-import static javax.swing.JButton.*;
 
 public class AppGui {
+    public static final int SELECT = 1;
+    public static final int ADD = 2;
+    public static final int DEFAULT = 0;
     private JFrame jFrame;
-
     private JTable jTable;
     private JMenuBar jMenuBar;
     private JMenu jMenu1;
@@ -29,6 +21,8 @@ public class AppGui {
     private JMenu jMenu5;
     private JMenu jMenu6;
     private JMenu jMenu7;
+    private JMenuItem jMenuItem1;
+    private JMenuItem jMenuItem2;
     private ClassSet classSet;
 
     public AppGui() throws IOException {
@@ -41,7 +35,7 @@ public class AppGui {
             }
         };
         setMenu();
-        setjTable();
+        setjTable(DEFAULT);
         JScrollPane jScrollPane = new JScrollPane(jTable);
         jFrame.setLayout(new BorderLayout());
 
@@ -69,9 +63,39 @@ public class AppGui {
         jMenu5 = new JMenu("刷新");
         jMenu6 = new JMenu("退出");
         jMenu7 = new JMenu("保存修改");
+
+        jMenuItem1 = new JMenuItem("按学号查找");
+        jMenuItem2 = new JMenuItem("按姓名查找");
+
+        jMenuItem1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                String str = JOptionPane.showInputDialog(jFrame, "请输入学号");
+                if (str != null) {
+                    classSet.SelectNumber(str);
+                    setjTable(SELECT);
+                }
+            }
+        });
+
+        jMenuItem2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                String str = JOptionPane.showInputDialog(jFrame, "请输入学生姓名");
+                if (str != null) {
+                    classSet.SelectNumber(str);
+                    setjTable(SELECT);
+                }
+            }
+        });
+
+        jMenu4.add(jMenuItem1);
+        jMenu4.add(jMenuItem2);
+
         jMenu6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+//                JOptionPane.showConfirmDialog(jFrame, "是否保存当前修改?");
                 System.exit(0);
             }
         });
@@ -84,7 +108,7 @@ public class AppGui {
         jMenu5.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                setjTable();
+                setjTable(DEFAULT);
             }
         });
         jMenu2.addMouseListener(new MouseAdapter() {
@@ -93,11 +117,24 @@ public class AppGui {
 
             }
         });
+        jMenu3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                String str = JOptionPane.showInputDialog(jFrame, "请输入需要删除的学生的学号");
+                if (str != null) {
+                    boolean tag = classSet.Delete(classSet.getStudentTable().get(str));
+                    if (!tag) JOptionPane.showMessageDialog(jFrame, "没有该学生！");
+                    else JOptionPane.showMessageDialog(jFrame, "操作成功！");
+                }
+//                System.out.println(classSet);
+            }
+        });
         jMenu7.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 try {
                     classSet.ExportStudentInformation();
+                    JOptionPane.showMessageDialog(jFrame, "操作成功！");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -194,10 +231,19 @@ public class AppGui {
                 jDialog.dispose();
             }
         }
+        class MyAdapter1 extends MouseAdapter {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+
+            }
+        }
     }
 
-    private void setjTable() {
-        Vector<Vector<Object>> studentList = classSet.getAll();
+    private void setjTable(int MODEL) {
+        Vector<Vector<Object>> studentList;
+        if (MODEL == DEFAULT) studentList = classSet.getAll();
+        else studentList = classSet.getSelectResult();
         AbstractTableModel tokenmodel =new AbstractTableModel() {
 
             @Override
@@ -224,8 +270,6 @@ public class AppGui {
                 };
             }
         };
-
-
         jTable.setModel(tokenmodel);
         jTable.getTableHeader().setReorderingAllowed(false);
     }

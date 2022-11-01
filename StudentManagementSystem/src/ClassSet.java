@@ -1,16 +1,19 @@
 import java.io.*;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.PrimitiveIterator;
 import java.util.Vector;
 
 public class ClassSet {
     HashMap<String, Student> StudentTable;
     HashMap<String, String> NameTable; // 姓名-学号表，实现按名查找
+    Vector<Vector<Object>> SelectResult; // 查询结果
     // 从文件中读取数据构造hashmap
     public ClassSet() throws IOException {
         // 遍历每一个元素
         StudentTable = new HashMap<String, Student>();
         NameTable = new HashMap<String, String>();
+        SelectResult = new Vector<>();
         ImportStudentInformation();
         // 构建姓名-学号索引表
         Rebuild();
@@ -52,13 +55,13 @@ public class ClassSet {
     }
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder("{\n");
+        StringBuilder res = new StringBuilder("");
         for (String o : StudentTable.keySet()) {
             if (StudentTable.get(o) != null) {
                 res.append(StudentTable.get(o).toString()).append('\n');
             }
         }
-        return res + "}";
+        return res + "";
     }
 
     public void DispNameTable() {
@@ -67,8 +70,12 @@ public class ClassSet {
         }
     }
 
+    public Vector<Vector<Object>> getSelectResult() {
+        return SelectResult;
+    }
+
     private void ImportStudentInformation() throws IOException {
-        FileReader fileReader = new FileReader("lib/Student.txt");
+        FileReader fileReader = new FileReader("lib/Test.txt");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String Line;
         String[] Message;
@@ -79,7 +86,7 @@ public class ClassSet {
             temp.setSex(Message[1].charAt(0));
             temp.setSname(Message[2]);
             temp.setAge(Integer.parseInt(Message[3]));
-            temp.setScore(Integer.parseInt(Message[4]));
+            temp.setScore(Double.parseDouble(Message[4]));
             this.StudentTable.put(temp.getSnumber(), temp);
         }
         bufferedReader.close();
@@ -89,10 +96,11 @@ public class ClassSet {
     // 将学生信息写回文件
     public void ExportStudentInformation() throws IOException {
         InvBuild();
-        FileWriter fileWriter = new FileWriter("lib/Student.txt");
+        FileWriter fileWriter = new FileWriter("lib/Test.txt");
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         // 将学生信息表中的信息写回文件
-
+        String all = toString();
+        bufferedWriter.write(all);
         bufferedWriter.close();
         fileWriter.close();
     }
@@ -102,6 +110,11 @@ public class ClassSet {
             o.setSname(o.getSname() + '#');
         }
     }
+
+    public HashMap<String, Student> getStudentTable() {
+        return StudentTable;
+    }
+
     // 增加一个学生
     public boolean Additions(Student o) {
         if (StudentTable.get(o.getSnumber()) != null) {
@@ -128,23 +141,50 @@ public class ClassSet {
     }
 
     // 删除学生
-    public void Delete(Student o) {
-        StudentTable.put(o.getSnumber(), null);
-        NameTable.put(o.getSname(), null);
+    public boolean Delete(Student o) {
+        if (o == null) return false;
+        if (StudentTable.get(o.getSnumber()) == null) return false;
+//        StudentTable.put(o.getSnumber(), null);
+        StudentTable.remove(o.getSnumber());
+//        NameTable.put(o.getSname(), null);
+        NameTable.remove(o.getSname());
+        return true;
     }
+
 
     public int getStudentSum() {
         return StudentTable.size();
     }
 
     // 按学号查询学生
-    public Student SelectNumber(String number) {
-        return StudentTable.get(number);
+    public void SelectNumber(String number) {
+        SelectResult.removeAllElements();
+        Student temp = StudentTable.get(number);
+        if (temp == null) return;
+        Vector<Object> temp1 = new Vector<>();
+        temp1.add(temp.getSnumber());
+        temp1.add(temp.getSname1());
+        temp1.add(temp.getSex());
+        temp1.add(temp.getAge());
+        temp1.add(temp.getScore());
+        SelectResult.add(temp1);
     }
 
     // 按名查找
-    public Student SelectName(String name) {
-        return StudentTable.get(NameTable.get(name));
+    public void SelectName(String name) {
+        SelectResult.removeAllElements();
+        String temp = name;
+        while (NameTable.get(temp) != null) {
+            Student o = StudentTable.get(NameTable.get(temp));
+            Vector<Object> o1 = new Vector<>();
+            o1.add(o.getSnumber());
+            o1.add(o.getSname());
+            o1.add(o.getSex());
+            o1.add(o.getAge());
+            o1.add(o.getScore());
+            SelectResult.add(o1);
+            temp = temp + '#';
+        }
     }
 
     public Vector<Vector<Object>> getAll() {
