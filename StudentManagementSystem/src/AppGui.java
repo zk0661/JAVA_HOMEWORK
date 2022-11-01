@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -83,7 +84,7 @@ public class AppGui {
             public void mousePressed(MouseEvent e) {
                 String str = JOptionPane.showInputDialog(jFrame, "请输入学生姓名");
                 if (str != null) {
-                    classSet.SelectNumber(str);
+                    classSet.SelectName(str);
                     setjTable(SELECT);
                 }
             }
@@ -109,12 +110,21 @@ public class AppGui {
             @Override
             public void mousePressed(MouseEvent e) {
                 setjTable(DEFAULT);
+//                System.out.println(classSet);
             }
         });
         jMenu2.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-
+                String str = JOptionPane.showInputDialog(jFrame, "请输入需要修改的学生学号");
+                classSet.SelectNumber(str);
+                Vector<Vector<Object>> selectResult = classSet.getSelectResult();
+                if (selectResult.size() == 0) {
+                    JOptionPane.showMessageDialog(jFrame, "要修改的学生不存在");
+                }
+                else {
+                    AddDialog dialog = new AddDialog("请输入修改后的信息", AddDialog.MOD, selectResult.get(0));
+                }
             }
         });
         jMenu3.addMouseListener(new MouseAdapter() {
@@ -126,7 +136,6 @@ public class AppGui {
                     if (!tag) JOptionPane.showMessageDialog(jFrame, "没有该学生！");
                     else JOptionPane.showMessageDialog(jFrame, "操作成功！");
                 }
-//                System.out.println(classSet);
             }
         });
         jMenu7.addMouseListener(new MouseAdapter() {
@@ -153,6 +162,21 @@ public class AppGui {
 
         private JTextField jTextField4;
         private JTextField jTextField5;
+        private Student buffer;
+        AddDialog(String title, int type, Vector<Object> vo) {
+            this(title, type);
+            jTextField1.setText((String) vo.get(0));
+            jTextField2.setText((String) vo.get(1));
+            jTextField3.setText(vo.get(2) + "");
+            jTextField4.setText(vo.get(3) + "");
+            jTextField5.setText(vo.get(4) + "");
+            buffer = new Student();
+            buffer.setSnumber((String) vo.get(0));
+            buffer.setSname((String) vo.get(1));
+            buffer.setSex((char)vo.get(2));
+            buffer.setAge((int)vo.get(3));
+            buffer.setScore((double)vo.get(4));
+        }
         AddDialog(String title, int type) {
             this.type = type;
             jDialog = new JDialog(jFrame, title);
@@ -196,8 +220,7 @@ public class AppGui {
 
             JButton jButton = new JButton("确认");
             if (type == ADD) jButton.addMouseListener(new MyAdapter());
-
-
+            else jButton.addMouseListener(new MyAdapter1());
             JPanel jPanel = new JPanel();
             jPanel.add(jButton);
             jDialog.add(jPanel);
@@ -234,8 +257,16 @@ public class AppGui {
         class MyAdapter1 extends MouseAdapter {
             @Override
             public void mousePressed(MouseEvent e) {
-
-
+                Student student = new Student();
+                student.setSnumber(jTextField1.getText());
+                student.setSname(jTextField2.getText());
+                student.setSex(jTextField3.getText().charAt(0));
+                student.setAge(Integer.parseInt(jTextField4.getText()));
+                student.setScore(Double.parseDouble(jTextField5.getText()));
+                boolean tag = classSet.Modify(buffer, student);
+                if (!tag) JOptionPane.showMessageDialog(jDialog, "学号不允许被修改！");
+                else JOptionPane.showMessageDialog(jDialog, "操作成功！");
+                jDialog.dispose();
             }
         }
     }
@@ -257,6 +288,7 @@ public class AppGui {
 
             @Override
             public int getColumnCount() {
+                if (studentList.size() == 0) return 0;
                 return studentList.get(0).size();
             }
             @Override//重写了获取列名函数

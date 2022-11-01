@@ -13,7 +13,7 @@ public class ClassSet {
         // 遍历每一个元素
         StudentTable = new HashMap<String, Student>();
         NameTable = new HashMap<String, String>();
-        SelectResult = new Vector<>();
+        SelectResult = new Vector<Vector<Object>>();
         ImportStudentInformation();
         // 构建姓名-学号索引表
         Rebuild();
@@ -49,6 +49,7 @@ public class ClassSet {
     }
 
     private void NameNumberMap() {
+        NameTable.clear();
         for (String o : StudentTable.keySet()) {
             NameTable.put(StudentTable.get(o).getSname(), o);
         }
@@ -144,10 +145,13 @@ public class ClassSet {
     public boolean Delete(Student o) {
         if (o == null) return false;
         if (StudentTable.get(o.getSnumber()) == null) return false;
+        InvBuild();
 //        StudentTable.put(o.getSnumber(), null);
         StudentTable.remove(o.getSnumber());
+        Rebuild();
 //        NameTable.put(o.getSname(), null);
-        NameTable.remove(o.getSname());
+        NameNumberMap();
+
         return true;
     }
 
@@ -176,9 +180,10 @@ public class ClassSet {
         String temp = name;
         while (NameTable.get(temp) != null) {
             Student o = StudentTable.get(NameTable.get(temp));
+            System.out.println(o);
             Vector<Object> o1 = new Vector<>();
             o1.add(o.getSnumber());
-            o1.add(o.getSname());
+            o1.add(o.getSname1());
             o1.add(o.getSex());
             o1.add(o.getAge());
             o1.add(o.getScore());
