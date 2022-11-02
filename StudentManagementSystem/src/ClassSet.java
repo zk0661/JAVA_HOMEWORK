@@ -76,7 +76,7 @@ public class ClassSet {
     }
 
     private void ImportStudentInformation() throws IOException {
-        FileReader fileReader = new FileReader("lib/Test.txt");
+        FileReader fileReader = new FileReader("lib/Student.txt");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String Line;
         String[] Message;
@@ -97,7 +97,7 @@ public class ClassSet {
     // 将学生信息写回文件
     public void ExportStudentInformation() throws IOException {
         InvBuild();
-        FileWriter fileWriter = new FileWriter("lib/Test.txt");
+        FileWriter fileWriter = new FileWriter("lib/Student.txt");
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         // 将学生信息表中的信息写回文件
         String all = toString();
